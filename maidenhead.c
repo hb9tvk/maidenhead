@@ -11,8 +11,7 @@ char letterize(int x) {
     return (char) x + 65;
 }
 
-char* get_mh(double lat, double lon, int size) {
-    static char locator[11];
+void get_mh(double lat, double lon, int size, char* locator) {
     double LON_F[]={20,2.0,0.083333,0.008333,0.0003472083333333333};
     double LAT_F[]={10,1.0,0.0416665,0.004166,0.0001735833333333333};
     int i;
@@ -34,22 +33,20 @@ char* get_mh(double lat, double lon, int size) {
         lat = fmod(lat, LAT_F[i]);
     }
     locator[i*2]=0;
-    return locator;
 }
 
-char* complete_mh(char* locator) {
-    static char locator2[11] = "LL55LL55LL";
+void complete_mh(char* locator) {
+    char locator2[12] = "LL55LL55LL";
     int len = strlen(locator);
-    if (len >= 10) return locator;
-    memcpy(locator2, locator, strlen(locator));
-    return locator2;
+    if (len >= 10) return;
+    memcpy(locator, locator2, strlen(locator2));
 }
 
 double mh2lon(char* locator) {
     double field, square, subsquare, extsquare, precsquare;
     int len = strlen(locator);
     if (len > 10) return 0;
-    if (len < 10) locator = complete_mh(locator);
+    if (len < 10) complete_mh(locator);
     field      = (locator[0] - 'A') * 20.0;
     square     = (locator[2] - '0') * 2.0;
     subsquare  = (locator[4] - 'A') / 12.0;
@@ -62,7 +59,7 @@ double mh2lat(char* locator) {
     double field, square, subsquare, extsquare, precsquare;
     int len = strlen(locator);
     if (len > 10) return 0;
-    if (len < 10) locator = complete_mh(locator);
+    if (len < 10) complete_mh(locator);
     field      = (locator[1] - 'A') * 10.0;
     square     = (locator[3] - '0') * 1.0;
     subsquare  = (locator[5] - 'A') / 24.0;
